@@ -9,12 +9,10 @@ import logging
 import os
 import sys
 
-# Add parent directory to path to import from backend
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
-from database import get_db, engine
-from models import Base, Article
-from schemas import (
+# Use relative imports for parallel_api modules
+from .database import get_db, engine
+from .models import Base, Article
+from .schemas import (
     ArticleCreate,
     ArticleResponse,
     ParallelExtractBatch,
@@ -24,9 +22,12 @@ from schemas import (
     NewsWithAudioResponse,
     ArticleAudioInfo
 )
-from embedding_service import get_embedding_service
-from summarization_service import get_summarization_service
-from parallel_unified_service import ParallelUnifiedService
+from .embedding_service import get_embedding_service
+from .summarization_service import get_summarization_service
+from .parallel_unified_service import ParallelUnifiedService
+
+# Add parent directory to path to import TTS service from backend
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Import TTS service from backend
 try:

@@ -4,7 +4,7 @@ SQLAlchemy models for articles database
 from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey
 from sqlalchemy.sql import func
 from pgvector.sqlalchemy import Vector
-from database import Base
+from .database import Base
 
 
 class Category(Base):
