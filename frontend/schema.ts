@@ -42,6 +42,7 @@ export interface Articles {
 
 export interface Categories {
   date_created: Generated<Timestamp>;
+  icon: string | null;
   id: Generated<number>;
   name: string;
 }
