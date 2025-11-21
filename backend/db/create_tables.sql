@@ -84,6 +84,7 @@ CREATE TABLE settings (
     user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     category_ids INTEGER[] NOT NULL DEFAULT '{}',
     preference_vector VECTOR(1536),
+    "language" TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
