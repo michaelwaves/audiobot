@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Music, Rss, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { updateUserDelivery } from "@/lib/actions/settings";
 
 export default function DeliverySetup() {
   const router = useRouter();
@@ -16,22 +17,34 @@ export default function DeliverySetup() {
   const [deliveryMethod, setDeliveryMethod] = useState<"spotify" | "rss">("spotify");
   const [frequency, setFrequency] = useState<"daily" | "weekly">("daily");
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const mockRssFeed = "https://briefly.com/feed/user123abc";
 
-  const handleSpotifyConnect = () => {
-    toast({
-      title: "Spotify Connected!",
-      description: "Your brief will be delivered to Spotify daily.",
-    });
-    setTimeout(() => {
-      router.push("/d");
-    }, 1000);
-  };
+  const handleFinish = async () => {
+    setSaving(true);
+    try {
+      await updateUserDelivery(deliveryMethod, frequency);
 
-  const handleRssSetup = () => {
-    localStorage.setItem("briefly_delivery", JSON.stringify({ method: "rss", frequency }));
-    router.push("/d");
+      if (deliveryMethod === "spotify") {
+        toast({
+          title: "Settings Saved!",
+          description: "Your podcast preferences have been saved.",
+        });
+      }
+
+      setTimeout(() => {
+        router.push("/d");
+      }, 500);
+    } catch (error) {
+      console.error("Failed to save delivery settings:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+      setSaving(false);
+    }
   };
 
   const copyRssFeed = () => {
@@ -74,16 +87,6 @@ export default function DeliverySetup() {
                   <p className="text-sm text-muted-foreground">Seamlessly sync to your library</p>
                 </div>
               </div>
-              {deliveryMethod === "spotify" && (
-                <Button
-                  variant="spotify"
-                  className="w-full"
-                  onClick={handleSpotifyConnect}
-                >
-                  <Music className="h-5 w-5 mr-2" />
-                  Connect Spotify Account
-                </Button>
-              )}
             </div>
           </div>
 
@@ -159,11 +162,12 @@ export default function DeliverySetup() {
 
         <div className="flex justify-center">
           <Button
-            onClick={deliveryMethod === "spotify" ? handleSpotifyConnect : handleRssSetup}
+            onClick={handleFinish}
             size="lg"
             className="min-w-[200px]"
+            disabled={saving}
           >
-            Finish Setup
+            {saving ? "Saving..." : "Finish Setup"}
           </Button>
         </div>
       </div>

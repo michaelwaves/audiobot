@@ -1,6 +1,6 @@
 import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "@/node_modules/@types/pg";
-import { DB } from "./schema";
+import { Pool } from "pg";
+import { DB } from "@/schema";
 
 
 const dialect = new PostgresDialect({

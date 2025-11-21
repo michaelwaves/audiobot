@@ -46,6 +46,7 @@ CREATE TABLE users (
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
+    icon TEXT,
     date_created TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

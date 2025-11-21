@@ -74,8 +74,11 @@ export interface Sessions {
 export interface Settings {
   category_ids: Generated<number[]>;
   created_at: Generated<Timestamp>;
+  delivery_method: Generated<string | null>;
+  frequency: Generated<string | null>;
   id: Generated<number>;
   language: string | null;
+  length: Generated<number | null>;
   preference_vector: string | null;
   updated_at: Generated<Timestamp>;
   user_id: number;

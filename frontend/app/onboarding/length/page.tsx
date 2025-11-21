@@ -2,28 +2,28 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button-variants";
 import { Card } from "@/components/ui/card";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { updateUserLength } from "@/lib/actions/settings";
 
 const LENGTH_OPTIONS = [
   {
-    value: "5",
+    value: 5,
     title: "5 Minutes",
     subtitle: "Executive Summary",
     description: "Perfect for a quick morning briefing",
     icon: "⚡"
   },
   {
-    value: "10",
+    value: 10,
     title: "10 Minutes",
     subtitle: "Mid-Length Digest",
     description: "Ideal for your commute or coffee break",
     icon: "☕"
   },
   {
-    value: "15",
+    value: 15,
     title: "15 Minutes",
     subtitle: "Deep Brief",
     description: "Comprehensive coverage with analysis",
@@ -33,14 +33,23 @@ const LENGTH_OPTIONS = [
 
 export default function LengthSelection() {
   const router = useRouter();
-  const [selectedLength, setSelectedLength] = useState<string | null>(null);
+  const [selectedLength, setSelectedLength] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const handleSelect = (value: string) => {
+  const handleSelect = async (value: number) => {
     setSelectedLength(value);
-    localStorage.setItem("briefly_length", value);
-    setTimeout(() => {
-      router.push("/onboarding/language");
-    }, 500);
+    setSaving(true);
+
+    try {
+      await updateUserLength(value);
+      setTimeout(() => {
+        router.push("/onboarding/language");
+      }, 500);
+    } catch (error) {
+      console.error("Failed to save length:", error);
+      alert("Failed to save length. Please try again.");
+      setSaving(false);
+    }
   };
 
   return (
@@ -59,12 +68,13 @@ export default function LengthSelection() {
           {LENGTH_OPTIONS.map((option) => (
             <Card
               key={option.value}
-              onClick={() => handleSelect(option.value)}
+              onClick={() => !saving && handleSelect(option.value)}
               className={cn(
                 "p-8 cursor-pointer transition-smooth hover-lift border-2 text-center",
                 selectedLength === option.value
                   ? "border-primary bg-primary/5 shadow-large"
-                  : "border-border hover:border-primary/50"
+                  : "border-border hover:border-primary/50",
+                saving && "opacity-50 cursor-not-allowed"
               )}
             >
               <div className="text-5xl mb-4">{option.icon}</div>

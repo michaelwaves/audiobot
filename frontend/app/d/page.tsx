@@ -1,34 +1,21 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { getUserSettings, getCategories } from "@/lib/actions/settings";
 import Link from "next/link";
 import { Button } from "@/components/ui/button-variants";
 import { Card } from "@/components/ui/card";
 import { Radio, Clock, Calendar, Settings, Play, RefreshCw, Globe } from "lucide-react";
-import { SettingsModal } from "@/components/SettingsModal";
+import { auth } from "@/auth";
 
-export default function Dashboard() {
-  const [userData, setUserData] = useState<any>(null);
-  const [topics, setTopics] = useState<string[]>([]);
-  const [length, setLength] = useState<string>("10");
-  const [language, setLanguage] = useState<string>("English");
-  const [settingsOpen, setSettingsOpen] = useState(false);
+export default async function Dashboard() {
+  const session = await auth();
+  const settings = await getUserSettings();
+  const allCategories = await getCategories();
 
-  useEffect(() => {
-    const user = localStorage.getItem("briefly_user");
-    const savedTopics = localStorage.getItem("briefly_topics");
-    const savedLength = localStorage.getItem("briefly_length");
-    const savedLanguage = localStorage.getItem("briefly_language");
+  const selectedCategories = settings?.category_ids
+    ? allCategories.filter(cat => settings.category_ids.includes(cat.id))
+    : [];
 
-    if (user) setUserData(JSON.parse(user));
-    if (savedTopics) setTopics(JSON.parse(savedTopics));
-    if (savedLength) setLength(savedLength);
-    if (savedLanguage) setLanguage(savedLanguage);
-  }, []);
-
-  const handleLanguageUpdate = (newLanguage: string) => {
-    setLanguage(newLanguage);
-  };
+  const length = settings?.length || 10;
+  const language = settings?.language || "English";
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -42,7 +29,7 @@ export default function Dashboard() {
       <div className="container mx-auto px-6 py-12 max-w-5xl">
         <div className="mb-12 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold mb-2">
-            Good morning, {userData?.firstName || "there"}! 👋
+            Good morning, {session?.user?.name?.split(' ')[0] || "there"}! 👋
           </h1>
           <p className="text-xl text-muted-foreground">
             Your daily brief is ready
@@ -72,10 +59,11 @@ export default function Dashboard() {
                 Your Daily Digest — {today.split(",")[0]}
               </h2>
               <p className="text-muted-foreground mb-4">
-                {topics.length > 0 ? (
+                {selectedCategories.length > 0 ? (
                   <>
-                    {topics.length} topics covered including {topics.slice(0, 3).join(", ")}
-                    {topics.length > 3 && ` and ${topics.length - 3} more`}
+                    {selectedCategories.length} topics covered including{" "}
+                    {selectedCategories.slice(0, 3).map(c => c.name).join(", ")}
+                    {selectedCategories.length > 3 && ` and ${selectedCategories.length - 3} more`}
                   </>
                 ) : (
                   <>No topics selected yet. <Link href="/onboarding/topics" className="text-primary hover:underline">Select your topics</Link></>
@@ -104,7 +92,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg">Edit Topics</h3>
-                  <p className="text-sm text-muted-foreground">Customize your interests</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedCategories.length > 0
+                      ? `${selectedCategories.length} topics selected`
+                      : "Customize your interests"}
+                  </p>
                 </div>
               </div>
             </Card>
@@ -118,7 +110,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg">Change Length</h3>
-                  <p className="text-sm text-muted-foreground">Adjust brief duration</p>
+                  <p className="text-sm text-muted-foreground">Currently {length} minutes</p>
                 </div>
               </div>
             </Card>
@@ -129,9 +121,9 @@ export default function Dashboard() {
           <h3 className="text-2xl font-bold mb-6">Recent Episodes</h3>
           <div className="space-y-4">
             {[
-              { date: "Yesterday", topics: "AI, Startups, Finance" },
-              { date: "2 days ago", topics: "Politics, Climate, Science" },
-              { date: "3 days ago", topics: "Tech Leaders, Stock Market" }
+              { date: "Yesterday", topics: selectedCategories.slice(0, 3).map(c => c.name).join(", ") || "AI, Startups, Finance" },
+              { date: "2 days ago", topics: selectedCategories.slice(1, 4).map(c => c.name).join(", ") || "Politics, Climate, Science" },
+              { date: "3 days ago", topics: selectedCategories.slice(2, 5).map(c => c.name).join(", ") || "Tech Leaders, Stock Market" }
             ].map((episode, idx) => (
               <Card key={idx} className="p-6 hover-lift cursor-pointer border-0 shadow-soft">
                 <div className="flex items-center gap-4">
@@ -158,13 +150,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      <SettingsModal
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        currentLanguage={language}
-        onLanguageUpdate={handleLanguageUpdate}
-      />
     </div>
   );
 }
