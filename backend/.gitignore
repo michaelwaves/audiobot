@@ -1,1 +1,10 @@
 .env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+generated_audio/
+*.mp3
+*.wav
