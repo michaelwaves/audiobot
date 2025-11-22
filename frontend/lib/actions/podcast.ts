@@ -34,6 +34,7 @@ export async function generatePodcast(params?: {
     similarity_threshold: params?.similarity_threshold || 0.9,
     voice_id: params?.voice_id || "21m00Tcm4TlvDq8ikWAM"
   };
+  console.log(`${backendUrl}/podcast/generate/user`)
 
   try {
     const response = await fetch(`${backendUrl}/podcast/generate/user`, {
