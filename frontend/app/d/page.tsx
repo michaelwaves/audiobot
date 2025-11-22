@@ -2,8 +2,9 @@ import { getUserSettings, getCategories } from "@/lib/actions/settings";
 import Link from "next/link";
 import { Button } from "@/components/ui/button-variants";
 import { Card } from "@/components/ui/card";
-import { Radio, Clock, Calendar, Settings, Play, RefreshCw, Globe } from "lucide-react";
+import { Radio, Clock, Calendar, Settings, Play, Globe } from "lucide-react";
 import { auth } from "@/auth";
+import { GeneratePodcastButton } from "@/components/GeneratePodcastButton";
 
 export default async function Dashboard() {
   const session = await auth();
@@ -74,10 +75,7 @@ export default async function Dashboard() {
                   <Play className="h-5 w-5 mr-2" />
                   Listen to Brief
                 </Button>
-                <Button variant="outline">
-                  <RefreshCw className="h-5 w-5 mr-2" />
-                  Regenerate
-                </Button>
+                <GeneratePodcastButton />
               </div>
             </div>
           </div>
