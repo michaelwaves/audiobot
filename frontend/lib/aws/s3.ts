@@ -3,7 +3,7 @@
 import { S3Client, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { db } from "@/lib/db/db"
-import { auth } from "@/lib/auth"
+import { auth } from "@/auth"
 import type { Podcasts } from "@/lib/db/schema"
 
 const s3Client = new S3Client({

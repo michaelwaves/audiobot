@@ -38,7 +38,7 @@ class ArticleService:
             CROSS JOIN settings s
             WHERE s.user_id = %s
                 AND s.preference_vector IS NOT NULL
-                AND (a.category_id = ANY(s.category_ids) OR cardinality(s.category_ids) = 0)
+              
                 AND 1 - (a.vector <=> s.preference_vector) >= %s
             ORDER BY similarity_score DESC, a.date_written DESC
             LIMIT %s;

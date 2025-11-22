@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     )
 
     # Database Configuration
-    database_url: str = "postgresql://user:password@localhost:5432/audiobot"
+    database_url: str
 
     # ElevenLabs API Configuration
     elevenlabs_api_key: str

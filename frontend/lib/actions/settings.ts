@@ -243,6 +243,17 @@ export async function updateUserPreferenceVector(articleIds: number[]) {
     avgVector[i] /= vectors.length;
   }
 
+  let norm = 0;
+  for (let i = 0; i < dimensions; i++) {
+    norm += avgVector[i] * avgVector[i];
+  }
+  norm = Math.sqrt(norm);
+
+  if (norm > 0) {
+    for (let i = 0; i < dimensions; i++) {
+      avgVector[i] /= norm;
+    }
+  }
   const avgVectorStr = `[${avgVector.join(',')}]`;
 
   await db
